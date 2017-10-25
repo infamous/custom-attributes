@@ -12,6 +12,7 @@ class CustomAttributeRegistry {
     this.ownerDocument = ownerDocument;
     this._attrMap = new Map();
     this._elementMap = new WeakMap();
+    this._attributeReadyPromises = new WeakMap();
     this._observe();
   }
 
@@ -24,6 +25,50 @@ class CustomAttributeRegistry {
     var map = this._elementMap.get(element);
     if(!map) return;
     return map.get(attrName);
+  }
+
+  whenReady(element, attributeName) {
+    var promiseMap = null;
+
+    if (!this._attributeReadyPromises.has(element)) {
+      promiseMap = new Map;
+      this._attributeReadyPromises.set(element, promiseMap);
+    }
+    else {
+      promiseMap = this._attributeReadyPromises.get(element);
+    }
+
+    var promise = null;
+    var resolve = null;
+
+    if (!promiseMap.has(attributeName)) {
+      promise = new Promise( function(r) { resolve = r; } ),
+      promiseMap.set(attributeName, { promise, resolve });
+    }
+    else {
+      promise = promiseMap.get(attributeName).promise;
+    }
+
+    // if we made a new promise, resolve the promise if the custom attribute
+    // was already constructed
+    if (resolve) {
+      if (this._elementMap.has(element)) {
+        var map = this._elementMap.get(element);
+        if (map.has(attributeName)) {
+          resolve();
+          this._cleanupPromise(element, promiseMap, attributeName);
+        }
+      }
+    }
+
+    return promise
+  }
+
+  _cleanupPromise(el, promiseMap, attrName) {
+    promiseMap.delete(attrName);
+    if (!promiseMap.size) {
+      this._attributeReadyPromises.delete(el);
+    }
   }
 
   _getConstructor(attrName){
@@ -117,6 +162,14 @@ class CustomAttributeRegistry {
       inst.value = newVal;
       if(inst.connectedCallback) {
         inst.connectedCallback();
+      }
+
+      var promiseMap = null;
+      if (promiseMap = this._attributeReadyPromises.get(el)) {
+        if (promiseMap.has(attrName)) {
+          promiseMap.get(attrName).resolve();
+          this._cleanupPromise(el, promiseMap, attrName);
+        }
       }
     }
     // Attribute was removed
