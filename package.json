@@ -2,7 +2,7 @@
   "name": "custom-attributes",
   "version": "1.1.3",
   "description": "Custom attributes, like custom elements, but for attributes",
-  "main": "index.js",
+  "main": "pkg/dist-umd/index.js",
   "@pika/pack": {
     "pipeline": [
       ["@pika/plugin-standard-pkg"],
