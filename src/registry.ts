@@ -1,3 +1,7 @@
+// TODO We don't know when a ShadowRoot is no longer referenced, hence we cannot
+// unobserve them. Verify that MOs are cleaned up once ShadowRoots are no longer
+// referenced.
+
 import type {Constructor} from 'lowclass'
 
 const forEach = Array.prototype.forEach
@@ -15,17 +19,28 @@ export class CustomAttributeRegistry {
 	private _attrMap = new Map<string, Constructor>()
 	private _elementMap = new WeakMap<Element, Map<string, CustomAttribute>>()
 
+	private _observer: MutationObserver = new MutationObserver(mutations => {
+		forEach.call(mutations, (m: MutationRecord) => {
+			if (m.type === 'attributes') {
+				const attr = this._getConstructor(m.attributeName!)
+				if (attr) this._handleChange(m.attributeName!, m.target as Element, m.oldValue)
+			}
+			// chlidList
+			else {
+				forEach.call(m.removedNodes, this._elementDisconnected)
+				forEach.call(m.addedNodes, this._elementConnected)
+			}
+		})
+	})
+
 	constructor(public ownerDocument: Document | ShadowRoot) {
-		// TODO Throw an error if ownerDocument already has a CustomAttributeRegistry instantiated for it.
-
 		if (!ownerDocument) throw new Error('Must be given a document')
-
-		this._observe()
 	}
 
 	define(attrName: string, Class: Constructor) {
 		this._attrMap.set(attrName, Class)
 		this._upgradeAttr(attrName)
+		this._reobserve()
 	}
 
 	get(element: Element, attrName: string) {
@@ -38,28 +53,24 @@ export class CustomAttributeRegistry {
 		return this._attrMap.get(attrName)
 	}
 
-	private _observer!: MutationObserver
-
 	private _observe() {
-		const root = this.ownerDocument
-		const disconnected = this._elementDisconnected.bind(this)
-		const connected = this._elementConnected.bind(this)
-
-		this._observer = new MutationObserver(mutations => {
-			forEach.call(mutations, (m: MutationRecord) => {
-				if (m.type === 'attributes') {
-					const attr = this._getConstructor(m.attributeName!)
-					if (attr) this._handleChange(m.attributeName!, m.target as Element, m.oldValue)
-				}
-				// chlidList
-				else {
-					forEach.call(m.removedNodes, disconnected)
-					forEach.call(m.addedNodes, connected)
-				}
-			})
+		this._observer.observe(this.ownerDocument, {
+			childList: true,
+			subtree: true,
+			attributes: true,
+			attributeOldValue: true,
+			attributeFilter: [...this._attrMap.keys()],
+			// attributeFilter: this._attrMap.keys(), // This works in Chrome, but TS complains, and not clear if it should work in all browsers yet: https://github.com/whatwg/dom/issues/1092
 		})
+	}
 
-		this._observer.observe(root, {childList: true, subtree: true, attributes: true, attributeOldValue: true})
+	private _unobserve() {
+		this._observer.disconnect()
+	}
+
+	private _reobserve() {
+		this._unobserve()
+		this._observe()
 	}
 
 	private _upgradeAttr(attrName: string, node: Element | Document | ShadowRoot = this.ownerDocument) {
@@ -70,7 +81,7 @@ export class CustomAttributeRegistry {
 		forEach.call(matches, (element: Element) => this._handleChange(attrName, element, null))
 	}
 
-	private _elementConnected(element: Element) {
+	private _elementConnected = (element: Element) => {
 		if (element.nodeType !== 1) return
 
 		// For each of the connected element's attribute, possibly instantiate the custom attributes.
@@ -83,7 +94,7 @@ export class CustomAttributeRegistry {
 		this._attrMap.forEach((_constructor, attr) => this._upgradeAttr(attr, element))
 	}
 
-	private _elementDisconnected(element: Element) {
+	private _elementDisconnected = (element: Element) => {
 		const map = this._elementMap.get(element)
 		if (!map) return
 
@@ -99,6 +110,7 @@ export class CustomAttributeRegistry {
 		let inst = map.get(attrName)
 		const newVal = el.getAttribute(attrName)
 
+		// Attribute is being created
 		if (!inst) {
 			const Constructor = this._getConstructor(attrName)!
 			inst = new Constructor() as CustomAttribute
