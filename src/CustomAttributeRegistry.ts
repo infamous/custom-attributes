@@ -1,19 +1,6 @@
-// TODO We don't know when a ShadowRoot is no longer referenced, hence we cannot
-// unobserve them. Verify that MOs are cleaned up once ShadowRoots are no longer
-// referenced.
-
 import type {Constructor} from 'lowclass'
 
 const forEach = Array.prototype.forEach
-
-export interface CustomAttribute {
-	ownerElement: Element
-	name: string
-	value: string
-	connectedCallback?(): void
-	disconnectedCallback?(): void
-	changedCallback?(oldValue: string, newValue: string): void
-}
 
 export class CustomAttributeRegistry {
 	private _attrMap = new Map<string, Constructor>()
@@ -25,6 +12,7 @@ export class CustomAttributeRegistry {
 				const attr = this._getConstructor(m.attributeName!)
 				if (attr) this._handleChange(m.attributeName!, m.target as Element, m.oldValue)
 			}
+
 			// chlidList
 			else {
 				forEach.call(m.removedNodes, this._elementDisconnected)
@@ -138,4 +126,25 @@ export class CustomAttributeRegistry {
 	}
 }
 
-export default CustomAttributeRegistry
+// TODO Replace with a class that extends from `Attr` for alignment with the web platform?
+export interface CustomAttribute {
+	ownerElement: Element
+	name: string
+	value: string
+	connectedCallback?(): void
+	disconnectedCallback?(): void
+	changedCallback?(oldValue: string, newValue: string): void
+}
+
+// Avoid errors trying to use DOM APIs in non-DOM environments (f.e. server-side rendering).
+if (globalThis.window?.document) {
+	const _attachShadow = Element.prototype.attachShadow
+
+	Element.prototype.attachShadow = function attachShadow(options) {
+		const root = _attachShadow.call(this, options)
+
+		if (!root.customAttributes) root.customAttributes = new CustomAttributeRegistry(root)
+
+		return root
+	}
+}
