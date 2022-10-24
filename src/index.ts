@@ -9,10 +9,7 @@ export * from './CustomAttributeRegistry.js'
 export let customAttributes: CustomAttributeRegistry
 
 // Avoid errors trying to use DOM APIs in non-DOM environments (f.e. server-side rendering).
-if (globalThis.window?.document) {
-	console.log('SET CUSTOM ATTRIBUTES')
-	customAttributes = globalThis.customAttributes = new CustomAttributeRegistry(document)
-}
+if (globalThis.window?.document) customAttributes = globalThis.customAttributes = new CustomAttributeRegistry(document)
 
 declare global {
 	// const doesn't always work (TS bug). At time of writing this, it doesn't work in this TS playground example:
