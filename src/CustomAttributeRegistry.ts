@@ -47,7 +47,8 @@ export class CustomAttributeRegistry {
 			subtree: true,
 			attributes: true,
 			attributeOldValue: true,
-			attributeFilter: [...this._attrMap.keys()],
+			attributeFilter: Array.from(this._attrMap.keys()),
+			// attributeFilter: [...this._attrMap.keys()], // Broken in Oculus
 			// attributeFilter: this._attrMap.keys(), // This works in Chrome, but TS complains, and not clear if it should work in all browsers yet: https://github.com/whatwg/dom/issues/1092
 		})
 	}
