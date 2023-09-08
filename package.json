@@ -20,9 +20,7 @@
 		"release:minor": "lume releaseMinor",
 		"release:major": "lume releaseMajor",
 		"version": "lume versionHook",
-		"postversion": "lume postVersionHook",
-		"OTHER SCRIPTS XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "",
-		"prepare": "npm run build"
+		"postversion": "lume postVersionHook"
 	},
 	"repository": {
 		"type": "git",
