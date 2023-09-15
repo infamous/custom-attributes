@@ -5,6 +5,18 @@
 
 Define custom attributes in the same way you can define custom elements, which allows for rich mixin types of behaviors on elements.
 
+## Spec duscussions
+
+The idea of "custom attributes" (and similar ideas) are being discussed as possibilities for web specs.
+
+Existing conversations (please notify if this needs an update):
+
+- Element Behaviors, and the has="" attribute. A useful alternative to Custom Elements in many cases! WICG/webcomponents#727
+- Alternative to customized builtins (custom elements with is=) w3c/tpac2023-breakouts#44
+- Proposal: Custom attributes for all elements, enhancements for more complex use cases WICG/webcomponents#1029
+- Customized built-in elements WebKit/standards-positions#97
+- Make custom attribute rules consistent with custom element name rules whatwg/html#2271
+
 ## Install
 
 ```shell
