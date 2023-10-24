@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/matthewp/custom-attributes.svg?branch=master)](https://travis-ci.org/matthewp/custom-attributes)
+[![Build status](https://github.com/lume/custom-attributes/actions/workflows/tests.yml/badge.svg)](https://github.com/lume/custom-attributes/actions/workflows/tests.yml)
 [![npm version](https://badge.fury.io/js/custom-attributes.svg)](http://badge.fury.io/js/custom-attributes)
 
 # custom-attributes
