@@ -1,4 +1,3 @@
-var _a;
 const forEach = Array.prototype.forEach;
 export class CustomAttributeRegistry {
     constructor(ownerDocument) {
@@ -31,7 +30,7 @@ export class CustomAttributeRegistry {
             const map = this._elementMap.get(element);
             if (!map)
                 return;
-            map.forEach(inst => { var _a; return (_a = inst.disconnectedCallback) === null || _a === void 0 ? void 0 : _a.call(inst); }, this);
+            map.forEach(inst => inst.disconnectedCallback?.(), this);
             this._elementMap.delete(element);
         };
         if (!ownerDocument)
@@ -72,7 +71,6 @@ export class CustomAttributeRegistry {
         forEach.call(matches, (element) => this._handleChange(attrName, element, null));
     }
     _handleChange(attrName, el, oldVal) {
-        var _a, _b, _c;
         let map = this._elementMap.get(el);
         if (!map)
             this._elementMap.set(el, (map = new Map()));
@@ -87,22 +85,22 @@ export class CustomAttributeRegistry {
             if (newVal == null)
                 throw new Error('Not possible!');
             inst.value = newVal;
-            (_a = inst.connectedCallback) === null || _a === void 0 ? void 0 : _a.call(inst);
+            inst.connectedCallback?.();
             return;
         }
         if (newVal == null) {
-            (_b = inst.disconnectedCallback) === null || _b === void 0 ? void 0 : _b.call(inst);
+            inst.disconnectedCallback?.();
             map.delete(attrName);
         }
         else if (newVal !== inst.value) {
             inst.value = newVal;
             if (oldVal == null)
                 throw new Error('Not possible!');
-            (_c = inst.changedCallback) === null || _c === void 0 ? void 0 : _c.call(inst, oldVal, newVal);
+            inst.changedCallback?.(oldVal, newVal);
         }
     }
 }
-if ((_a = globalThis.window) === null || _a === void 0 ? void 0 : _a.document) {
+if (globalThis.window?.document) {
     const _attachShadow = Element.prototype.attachShadow;
     Element.prototype.attachShadow = function attachShadow(options) {
         const root = _attachShadow.call(this, options);
