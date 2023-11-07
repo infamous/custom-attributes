@@ -1,38 +1,23 @@
 const forEach = Array.prototype.forEach;
 export class CustomAttributeRegistry {
+    ownerDocument;
+    _attrMap = new Map();
+    _elementMap = new WeakMap();
+    _observer = new MutationObserver(mutations => {
+        forEach.call(mutations, (m) => {
+            if (m.type === 'attributes') {
+                const attr = this._getConstructor(m.attributeName);
+                if (attr)
+                    this._handleChange(m.attributeName, m.target, m.oldValue);
+            }
+            else {
+                forEach.call(m.removedNodes, this._elementDisconnected);
+                forEach.call(m.addedNodes, this._elementConnected);
+            }
+        });
+    });
     constructor(ownerDocument) {
         this.ownerDocument = ownerDocument;
-        this._attrMap = new Map();
-        this._elementMap = new WeakMap();
-        this._observer = new MutationObserver(mutations => {
-            forEach.call(mutations, (m) => {
-                if (m.type === 'attributes') {
-                    const attr = this._getConstructor(m.attributeName);
-                    if (attr)
-                        this._handleChange(m.attributeName, m.target, m.oldValue);
-                }
-                else {
-                    forEach.call(m.removedNodes, this._elementDisconnected);
-                    forEach.call(m.addedNodes, this._elementConnected);
-                }
-            });
-        });
-        this._elementConnected = (element) => {
-            if (element.nodeType !== 1)
-                return;
-            forEach.call(element.attributes, (attr) => {
-                if (this._getConstructor(attr.name))
-                    this._handleChange(attr.name, element, null);
-            });
-            this._attrMap.forEach((_constructor, attr) => this._upgradeAttr(attr, element));
-        };
-        this._elementDisconnected = (element) => {
-            const map = this._elementMap.get(element);
-            if (!map)
-                return;
-            map.forEach(inst => inst.disconnectedCallback?.(), this);
-            this._elementMap.delete(element);
-        };
         if (!ownerDocument)
             throw new Error('Must be given a document');
     }
@@ -70,6 +55,22 @@ export class CustomAttributeRegistry {
         const matches = node.querySelectorAll('[' + attrName + ']');
         forEach.call(matches, (element) => this._handleChange(attrName, element, null));
     }
+    _elementConnected = (element) => {
+        if (element.nodeType !== 1)
+            return;
+        forEach.call(element.attributes, (attr) => {
+            if (this._getConstructor(attr.name))
+                this._handleChange(attr.name, element, null);
+        });
+        this._attrMap.forEach((_constructor, attr) => this._upgradeAttr(attr, element));
+    };
+    _elementDisconnected = (element) => {
+        const map = this._elementMap.get(element);
+        if (!map)
+            return;
+        map.forEach(inst => inst.disconnectedCallback?.(), this);
+        this._elementMap.delete(element);
+    };
     _handleChange(attrName, el, oldVal) {
         let map = this._elementMap.get(el);
         if (!map)
