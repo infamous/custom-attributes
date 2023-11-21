@@ -10,6 +10,7 @@ export class CustomAttributeRegistry {
                 if (attr)
                     this._handleChange(m.attributeName, m.target, m.oldValue);
             }
+            // chlidList
             else {
                 forEach.call(m.removedNodes, this._elementDisconnected);
                 forEach.call(m.addedNodes, this._elementConnected);
@@ -42,6 +43,8 @@ export class CustomAttributeRegistry {
             attributes: true,
             attributeOldValue: true,
             attributeFilter: Array.from(this._attrMap.keys()),
+            // attributeFilter: [...this._attrMap.keys()], // Broken in Oculus
+            // attributeFilter: this._attrMap.keys(), // This works in Chrome, but TS complains, and not clear if it should work in all browsers yet: https://github.com/whatwg/dom/issues/1092
         });
     }
     _unobserve() {
@@ -53,15 +56,20 @@ export class CustomAttributeRegistry {
     }
     _upgradeAttr(attrName, node = this.ownerDocument) {
         const matches = node.querySelectorAll('[' + attrName + ']');
+        // Possibly create custom attributes that may be in the given 'node' tree.
+        // Use a forEach as Edge doesn't support for...of on a NodeList
         forEach.call(matches, (element) => this._handleChange(attrName, element, null));
     }
     _elementConnected = (element) => {
         if (element.nodeType !== 1)
             return;
+        // For each of the connected element's attribute, possibly instantiate the custom attributes.
+        // Use a forEach as Safari 10 doesn't support for...of on NamedNodeMap (attributes)
         forEach.call(element.attributes, (attr) => {
             if (this._getConstructor(attr.name))
                 this._handleChange(attr.name, element, null);
         });
+        // Possibly instantiate custom attributes that may be in the subtree of the connected element.
         this._attrMap.forEach((_constructor, attr) => this._upgradeAttr(attr, element));
     };
     _elementDisconnected = (element) => {
@@ -77,6 +85,7 @@ export class CustomAttributeRegistry {
             this._elementMap.set(el, (map = new Map()));
         let inst = map.get(attrName);
         const newVal = el.getAttribute(attrName);
+        // Attribute is being created
         if (!inst) {
             const Constructor = this._getConstructor(attrName);
             inst = new Constructor();
@@ -89,10 +98,12 @@ export class CustomAttributeRegistry {
             inst.connectedCallback?.();
             return;
         }
+        // Attribute was removed
         if (newVal == null) {
             inst.disconnectedCallback?.();
             map.delete(attrName);
         }
+        // Attribute changed
         else if (newVal !== inst.value) {
             inst.value = newVal;
             if (oldVal == null)
@@ -101,6 +112,7 @@ export class CustomAttributeRegistry {
         }
     }
 }
+// Avoid errors trying to use DOM APIs in non-DOM environments (f.e. server-side rendering).
 if (globalThis.window?.document) {
     const _attachShadow = Element.prototype.attachShadow;
     Element.prototype.attachShadow = function attachShadow(options) {
