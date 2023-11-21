@@ -7,5 +7,5 @@ export let customAttributes;
 // Avoid errors trying to use DOM APIs in non-DOM environments (f.e. server-side rendering).
 if (globalThis.window?.document)
     customAttributes = globalThis.customAttributes = new CustomAttributeRegistry(document);
-export const version = '0.2.2';
+export const version = '0.2.3';
 //# sourceMappingURL=index.js.map

@@ -10,5 +10,5 @@ declare global {
         customAttributes: CustomAttributeRegistry;
     }
 }
-export declare const version = "0.2.2";
+export declare const version = "0.2.3";
 //# sourceMappingURL=index.d.ts.map
