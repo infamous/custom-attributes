@@ -43,6 +43,6 @@
 		"typescript": "^5.0.0"
 	},
 	"dependencies": {
-		"lowclass": "^7.0.0"
+		"lowclass": "^8.0.0"
 	}
 }

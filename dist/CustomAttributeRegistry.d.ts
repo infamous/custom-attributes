@@ -1,4 +1,4 @@
-import type { Constructor } from 'lowclass';
+import type { Constructor } from 'lowclass/dist/Constructor.js';
 export declare class CustomAttributeRegistry {
     ownerDocument: Document | ShadowRoot;
     private _attrMap;
