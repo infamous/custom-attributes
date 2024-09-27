@@ -8,9 +8,7 @@ jobs:
 
         strategy:
             matrix:
-                # TODO get tests working in Windows too
-                # windows-latest
-                operating-system: [ubuntu-latest, macos-latest]
+                operating-system: [ubuntu-latest, windows-latest, macos-latest]
 
         steps:
             - uses: actions/checkout@v1
