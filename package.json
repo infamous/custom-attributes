@@ -12,7 +12,7 @@
 		"dev": "lume dev",
 		"typecheck": "lume typecheck",
 		"typecheck:watch": "lume typecheckWatch",
-		"test": "echo TODO use 'lume test'",
+		"test": "lume test",
 		"test:watch": "lume test --watch",
 		"prettier": "lume prettier",
 		"prettier:check": "lume prettierCheck",
