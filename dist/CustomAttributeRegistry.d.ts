@@ -1,20 +1,10 @@
-import type { Constructor } from 'lowclass';
+import type { Constructor } from 'lowclass/dist/Constructor.js';
 export declare class CustomAttributeRegistry {
+    #private;
     ownerDocument: Document | ShadowRoot;
-    private _attrMap;
-    private _elementMap;
-    private _observer;
     constructor(ownerDocument: Document | ShadowRoot);
     define(attrName: string, Class: Constructor): void;
     get(element: Element, attrName: string): CustomAttribute | undefined;
-    private _getConstructor;
-    private _observe;
-    private _unobserve;
-    private _reobserve;
-    private _upgradeAttr;
-    private _elementConnected;
-    private _elementDisconnected;
-    private _handleChange;
 }
 export interface CustomAttribute {
     ownerElement: Element;

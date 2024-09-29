@@ -12,7 +12,7 @@
 		"dev": "lume dev",
 		"typecheck": "lume typecheck",
 		"typecheck:watch": "lume typecheckWatch",
-		"test": "echo TODO use 'lume test'",
+		"test": "lume test",
 		"test:watch": "lume test --watch",
 		"prettier": "lume prettier",
 		"prettier:check": "lume prettierCheck",
@@ -37,12 +37,12 @@
 	},
 	"homepage": "https://github.com/matthewp/custom-attributes#readme",
 	"devDependencies": {
-		"@lume/cli": "^0.11.0",
+		"@lume/cli": "^0.13.0",
 		"prettier": "3.0.3",
 		"rollup": "^0.41.4",
 		"typescript": "^5.0.0"
 	},
 	"dependencies": {
-		"lowclass": "^7.0.0"
+		"lowclass": "^8.0.0"
 	}
 }
