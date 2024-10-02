@@ -37,7 +37,7 @@
 	},
 	"homepage": "https://github.com/matthewp/custom-attributes#readme",
 	"devDependencies": {
-		"@lume/cli": "^0.13.0",
+		"@lume/cli": "^0.14.0",
 		"prettier": "3.0.3",
 		"rollup": "^0.41.4",
 		"typescript": "^5.0.0"
