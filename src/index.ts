@@ -9,7 +9,19 @@ export * from './CustomAttributeRegistry.js'
 export let customAttributes: CustomAttributeRegistry
 
 // Avoid errors trying to use DOM APIs in non-DOM environments (f.e. server-side rendering).
-if (globalThis.window?.document) customAttributes = globalThis.customAttributes = new CustomAttributeRegistry(document)
+if (globalThis.window?.document) {
+	customAttributes = globalThis.customAttributes = new CustomAttributeRegistry(document)
+
+	const originalAttachShadow = Element.prototype.attachShadow
+
+	Element.prototype.attachShadow = function attachShadow(options) {
+		const root = originalAttachShadow.call(this, options)
+
+		if (!root.customAttributes) root.customAttributes = new CustomAttributeRegistry(root)
+
+		return root
+	}
+}
 
 declare global {
 	// const doesn't always work (TS bug). At time of writing this, it doesn't work in this TS playground example:
