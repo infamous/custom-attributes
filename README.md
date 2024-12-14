@@ -20,25 +20,25 @@ Existing conversations (please notify if this needs an update):
 ## Install
 
 ```shell
-npm install custom-attributes --save
+npm install @lume/custom-attributes --save
 ```
 
 Add as a script tag:
 
 ```html
-<script src="node_modules/custom-attributes/attr.js" defer></script>
+<script src="node_modules/@lume/custom-attributes/dist/index.js" type="module"></script>
 ```
 
 Or import as an ES module:
 
 ```js
-import customAttributes from 'custom-attributes'
+import {customAttributes} from '@lume/custom-attributes'
 ```
 
 Or you can just import the CustomAttributeRegistry and create your own instance:
 
 ```js
-import {CustomAttributeRegistry} from 'custom-attributes'
+import {CustomAttributeRegistry} from '@lume/custom-attributes'
 
 const customAttributes = new CustomAttributeRegistry(document)
 ```
