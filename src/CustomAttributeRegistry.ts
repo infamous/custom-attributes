@@ -136,16 +136,3 @@ export interface CustomAttribute {
 	disconnectedCallback?(): void
 	changedCallback?(oldValue: string, newValue: string): void
 }
-
-// Avoid errors trying to use DOM APIs in non-DOM environments (f.e. server-side rendering).
-if (globalThis.window?.document) {
-	const original = Element.prototype.attachShadow
-
-	Element.prototype.attachShadow = function attachShadow(options) {
-		const root = original.call(this, options)
-
-		if (!root.customAttributes) root.customAttributes = new CustomAttributeRegistry(root)
-
-		return root
-	}
-}
