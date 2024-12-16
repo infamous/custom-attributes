@@ -41,5 +41,3 @@ declare global {
 }
 
 export const version = '0.2.4'
-
-console.log('VERIFIED!!!!')

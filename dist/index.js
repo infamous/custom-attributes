@@ -16,5 +16,4 @@ if (globalThis.window?.document) {
     };
 }
 export const version = '0.2.4';
-console.log('VERIFIED!!!!');
 //# sourceMappingURL=index.js.map
