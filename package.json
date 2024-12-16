@@ -24,7 +24,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/matthewp/custom-attributes.git"
+		"url": "git+https://github.com/lume/custom-attributes.git"
 	},
 	"keywords": [
 		"web",
@@ -33,9 +33,9 @@
 	"author": "Matthew Phillips",
 	"license": "BSD-2-Clause",
 	"bugs": {
-		"url": "https://github.com/matthewp/custom-attributes/issues"
+		"url": "https://github.com/lume/custom-attributes/issues"
 	},
-	"homepage": "https://github.com/matthewp/custom-attributes#readme",
+	"homepage": "https://github.com/lume/custom-attributes#readme",
 	"devDependencies": {
 		"@lume/cli": "^0.14.0",
 		"prettier": "3.0.3",
