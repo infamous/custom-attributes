@@ -5,7 +5,16 @@ import { CustomAttributeRegistry } from './CustomAttributeRegistry.js';
 export * from './CustomAttributeRegistry.js';
 export let customAttributes;
 // Avoid errors trying to use DOM APIs in non-DOM environments (f.e. server-side rendering).
-if (globalThis.window?.document)
+if (globalThis.window?.document) {
     customAttributes = globalThis.customAttributes = new CustomAttributeRegistry(document);
+    const originalAttachShadow = Element.prototype.attachShadow;
+    Element.prototype.attachShadow = function attachShadow(options) {
+        const root = originalAttachShadow.call(this, options);
+        if (!root.customAttributes)
+            root.customAttributes = new CustomAttributeRegistry(root);
+        return root;
+    };
+}
 export const version = '0.2.4';
+console.log('VERIFIED!!!!');
 //# sourceMappingURL=index.js.map
