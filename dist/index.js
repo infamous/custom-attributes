@@ -15,5 +15,5 @@ if (globalThis.window?.document) {
         return root;
     };
 }
-export const version = '0.2.4';
+export const version = '0.3.0';
 //# sourceMappingURL=index.js.map
